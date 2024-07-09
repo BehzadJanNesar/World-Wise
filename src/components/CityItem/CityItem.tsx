@@ -26,7 +26,6 @@ interface CityItemProps {
 
 function CityItem({ city }: CityItemProps) {
    const { cityName, emoji, date } = city;
-   console.log(city);
    return (
       <li className={styles.cityItem}>
          <span className={styles.emoji}>{emoji}</span>

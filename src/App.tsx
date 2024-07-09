@@ -8,6 +8,7 @@ import PageNotFound from "./pages/PageNotFound";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import CityList from "./components/CityList/CityList";
+import CountryList from "./components/CountryList/CountryList";
 
 const BASE_URL = "http://localhost:9000";
 
@@ -42,7 +43,10 @@ function App() {
                <Route path="/app" element={<AppLayout />}>
                   <Route index element={<CityList cities={cities} isLoading={loading} />} />
                   <Route path="cities" element={<CityList cities={cities} isLoading={loading} />} />
-                  <Route path="contries" element={<p>this are contries</p>} />
+                  <Route
+                     path="contries"
+                     element={<CountryList cities={cities} isLoading={loading} />}
+                  />
                   <Route path="form" element={<p>this are form</p>} />
                </Route>
                <Route path="*" element={<PageNotFound />} />
