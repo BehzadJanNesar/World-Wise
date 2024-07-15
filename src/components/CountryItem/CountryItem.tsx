@@ -5,7 +5,7 @@ interface CountryItemProps {
       emoji: string;
       country: string;
    };
-   index: number;
+   key: number;
 }
 
 function CountryItem({ country }: CountryItemProps) {
