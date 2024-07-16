@@ -2,19 +2,22 @@ import styles from "../CountryList/CountryList.module.css";
 import CountryItem from "../CountryItem/CountryItem";
 import Message from "../Message/Message";
 import Spinner from "../Spinner/Spinner";
+import { useCities } from "../../contexts/CitiesContext";
 
 interface City {
    country: string;
    emoji: string;
 }
 
-interface CountryListProps {
+interface CountryListContextType {
    cities: City[];
-   isLoading: boolean;
+   loading: boolean;
 }
 
-function CountryList({ cities, isLoading }: CountryListProps) {
-   if (isLoading) return <Spinner />;
+function CountryList() {
+   const { loading, cities }: CountryListContextType = useCities();
+
+   if (loading) return <Spinner />;
 
    const countries = cities.reduce<{ country: string; emoji: string }[]>((arr, city) => {
       if (!arr.map((el) => el.country).includes(city.country))
