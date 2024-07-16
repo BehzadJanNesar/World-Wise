@@ -1,24 +1,32 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import axios from "axios";
 
-interface CitiesProviderProps {
-   children: React.ReactNode;
+interface City {
+   cityName: string;
+   emoji: string;
+   date: string;
+   notes?: string;
 }
 
 interface CitiesContextProps {
-   cities: any[];
+   cities: City[];
    loading: boolean;
+   // currentCity: City | null;
+   getCity: (id: string) => void;
 }
 
-const CitiesContext = createContext<CitiesContextProps>({
-   cities: [],
-   loading: false,
-});
+interface CitiesProviderProps {
+   children: ReactNode;
+}
+
+const CitiesContext = createContext();
 
 const BASE_URL = "http://localhost:9000";
+
 function CitiesProvider({ children }: CitiesProviderProps) {
-   const [cities, setCities] = useState<[]>([]);
+   const [cities, setCities] = useState([]);
    const [loading, setLoading] = useState<boolean>(false);
+   const [currentCity, setCurrentCity] = useState({});
 
    useEffect(() => {
       async function getData() {
@@ -28,7 +36,7 @@ function CitiesProvider({ children }: CitiesProviderProps) {
             const data = await res.data;
             setCities(data);
          } catch {
-            alert("there was an error to loading data...");
+            alert("There was an error loading data...");
          } finally {
             setLoading(false);
          }
@@ -36,9 +44,24 @@ function CitiesProvider({ children }: CitiesProviderProps) {
       getData();
    }, []);
 
-   const value = {
+   async function getCity(id: string) {
+      try {
+         setLoading(true);
+         const res = await axios.get(`${BASE_URL}/cities/${id}`);
+         const data = await res.data;
+         setCurrentCity(data);
+      } catch {
+         alert("There was an error loading data...");
+      } finally {
+         setLoading(false);
+      }
+   }
+
+   const value: CitiesContextProps = {
       cities,
       loading,
+      currentCity,
+      getCity,
    };
 
    return <CitiesContext.Provider value={value}>{children}</CitiesContext.Provider>;
@@ -46,7 +69,7 @@ function CitiesProvider({ children }: CitiesProviderProps) {
 
 const useCities = () => {
    const context = useContext(CitiesContext);
-   if (context === undefined) throw new Error("CitiesContext was used outside the CitiesProvider");
+   if (context === undefined) throw new Error("CitiesContext must be used within a CitiesProvider");
    return context;
 };
 
