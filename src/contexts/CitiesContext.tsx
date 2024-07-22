@@ -34,6 +34,7 @@ function CitiesProvider({ children }: CitiesProviderProps) {
             setLoading(true);
             const res = await axios.get(`${BASE_URL}/cities`);
             const data = await res.data;
+            console.log(data);
             setCities(data);
          } catch {
             alert("There was an error loading data...");
@@ -56,12 +57,41 @@ function CitiesProvider({ children }: CitiesProviderProps) {
          setLoading(false);
       }
    }
+   async function createCity(newCity) {
+      try {
+         setLoading(true);
+         const res = await axios.post(`${BASE_URL}/cities`, newCity, {
+            headers: {
+               "Content-type": "application/json",
+            },
+         });
+         const data = await res.data;
+         setCities((cities) => [...cities, data]);
+      } catch {
+         alert("There was an error loading data...");
+      } finally {
+         setLoading(false);
+      }
+   }
+   async function deleteCity(id: number) {
+      try {
+         setLoading(true);
+         await axios.delete(`${BASE_URL}/cities/${id}`);
+         setCities(cities.filter((city) => city.id !== id));
+      } catch {
+         alert("There was an error deleting city...");
+      } finally {
+         setLoading(false);
+      }
+   }
 
    const value: CitiesContextProps = {
       cities,
       loading,
       currentCity,
       getCity,
+      createCity,
+      deleteCity,
    };
 
    return <CitiesContext.Provider value={value}>{children}</CitiesContext.Provider>;

@@ -1,6 +1,7 @@
 // "https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=0&longitude=0"
 
 import { useEffect, useState } from "react";
+import "react-datepicker/dist/react-datepicker.css";
 
 import styles from "./Form.module.css";
 import Button from "../Button/Button";
@@ -8,6 +9,10 @@ import { useNavigate } from "react-router-dom";
 import ButtonBack from "../ButtonBack/ButtonBack";
 import axios from "axios";
 import { useUrlPosition } from "../../hooks/useUrlPosition";
+import Message from "../Message/Message";
+import Spinner from "../Spinner/Spinner";
+import DatePicker from "react-datepicker";
+import { useCities } from "../../contexts/CitiesContext";
 
 export function convertToEmoji(countryCode: string): string {
    const codePoints = countryCode
@@ -20,22 +25,35 @@ export function convertToEmoji(countryCode: string): string {
 const BASE_URL = "https://api.bigdatacloud.net/data/reverse-geocode-client";
 
 function Form() {
+   const { createCity, loading } = useCities();
    const navigate = useNavigate();
    const [isLoadingGeocoding, setIsLoadingGeocoding] = useState(false);
    const [cityName, setCityName] = useState<string>("");
    const [country, setCountry] = useState<string>("");
    const [date, setDate] = useState<string>(new Date().toISOString().slice(0, 10));
    const [notes, setNotes] = useState("");
+   const [emoji, setEmoji] = useState("");
+   const [geocodingError, setGeocodingError] = useState("");
    const [lat, lng] = useUrlPosition();
 
    useEffect(() => {
+      if (!lat && !lng) return;
+
       async function getCityData() {
          try {
-            const res = await axios.get(`${BASE_URL}?lat=${lat}&lng=${lng}`);
+            setIsLoadingGeocoding(true);
+            setGeocodingError("");
+            const res = await axios.get(`${BASE_URL}?latitude=${lat}&longitude=${lng}`);
             const data = await res.data;
-            setCityName(data.city);
+
+            if (!data.countryName)
+               throw new Error("That doesn't seem to be a city. Click somewhere else!");
+
+            setCityName(data.city || data.locality || "");
             setCountry(data.countryName);
+            setEmoji(convertToEmoji(data.countryCode));
          } catch (err) {
+            setGeocodingError(err.message);
          } finally {
             setIsLoadingGeocoding(false);
          }
@@ -43,17 +61,43 @@ function Form() {
       getCityData();
    }, [lat, lng]);
 
+   if (!lat || !lng) return <Message message="Start by clicking somewhere on the map..." />;
+
+   async function handleSubmit(e) {
+      e.preventDefault();
+      if (!cityName || !date) return;
+
+      const newCityItem = {
+         cityName,
+         country,
+         emoji,
+         date,
+         notes,
+         position: { lat, lng },
+      };
+      await createCity(newCityItem);
+      navigate("/app/cities");
+   }
+
+   if (isLoadingGeocoding) return <Spinner />;
+   if (geocodingError) return <Message message={geocodingError} />;
+
    return (
-      <form className={styles.form}>
+      <form className={`${styles.form} ${loading ? styles.loading : ""}`} onSubmit={handleSubmit}>
          <div className={styles.row}>
             <label htmlFor="cityName">City name</label>
             <input id="cityName" onChange={(e) => setCityName(e.target.value)} value={cityName} />
-            {/* <span className={styles.flag}>{emoji}</span> */}
+            <span className={styles.flag}>{emoji}</span>
          </div>
 
          <div className={styles.row}>
             <label htmlFor="date">When did you go to {cityName}?</label>
-            <input id="date" onChange={(e) => setDate(e.target.value)} value={date} />
+            <DatePicker
+               id="date"
+               onChange={(date) => setDate(date)}
+               selected={date}
+               dateFormat="dd/mm/yyyy"
+            />
          </div>
 
          <div className={styles.row}>
@@ -62,7 +106,7 @@ function Form() {
          </div>
 
          <div className={styles.buttons}>
-            <Button type={"primary"} onclick={() => {}}>
+            <Button type={"primary"} onclick={handleSubmit}>
                Add
             </Button>
             <ButtonBack />
