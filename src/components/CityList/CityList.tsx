@@ -3,15 +3,16 @@ import CityItem from "../CityItem/CityItem";
 import styles from "../CityList/CityList.module.css";
 import Message from "../Message/Message";
 import Sppiner from "../Spinner/Spinner";
+import type { City } from "../../Types/Types";
 
 interface CityListContextType {
-   loading: boolean;
-   cities: any[];
+   isLoading: boolean;
+   cities: City[];
 }
 
 function CityList() {
-   const { loading, cities }: CityListContextType = useCities();
-   if (loading) return <Sppiner />;
+   const { isLoading, cities }: CityListContextType = useCities();
+   if (isLoading) return <Sppiner />;
    if (!cities.length)
       return <Message message="Add your first city by clicking on a city on the map" />;
    return (

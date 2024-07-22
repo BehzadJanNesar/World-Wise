@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import styles from "../CityItem/CityItem.module.css";
 import { useCities } from "../../contexts/CitiesContext";
+import type { City } from "../../Types/Types";
 
 const formatDate = (date: string) =>
    new Intl.DateTimeFormat("en", {
@@ -11,40 +12,30 @@ const formatDate = (date: string) =>
    }).format(new Date(date));
 
 interface CityItemProps {
-   city: {
-      cityName: string;
-      country: string;
-      date: string;
-      emoji: string;
-      id: string;
-      notes: string;
-      position: {
-         lat: string;
-         lng: string;
-      };
-   };
-   key: number;
+   city: City
 }
 
 function CityItem({ city }: CityItemProps) {
    const { currentCity, deleteCity } = useCities();
    const { cityName, emoji, date, id, position } = city;
-   // let lat = position.lat;
-   // let lng = position.lng;
-   console.log(position);
+   let lat = position.lat;
+   let lng = position.lng;
 
-   function handleDeleteCity(e) {
+   function handleDeleteCity(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
       e.preventDefault();
       deleteCity(id);
+   }
+   function isCity(city: any): city is City {
+      return 'id' in city;
    }
 
    return (
       <li>
          <Link
             className={`${styles.cityItem} ${
-               currentCity.id === id ? styles["cityItem--active"] : ""
+              isCity(currentCity) && currentCity.id === id ? styles["cityItem--active"] : ""
             }`}
-            to={`${id}?lat=${position.lat}&lng=${position.lng}`}>
+            to={`${id}?lat=${lat}&lng=${lng}`}>
             <span className={styles.emoji}>{emoji}</span>
             <h3 className={styles.name}>{cityName}</h3>
             <time className={styles.date}>({formatDate(date)})</time>

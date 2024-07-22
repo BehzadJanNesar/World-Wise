@@ -1,8 +1,9 @@
 import { useState } from "react";
+import { Position } from "../Types/Types";
 
 export function useGeolocation(defaultPosition = null) {
    const [isLoading, setIsLoading] = useState<boolean>(false);
-   const [position, setPosition] = useState<{} | null>(defaultPosition);
+   const [position, setPosition] = useState<Position | null>(defaultPosition);
    const [error, setError] = useState<string | null>(null);
 
    function GetPosition() {
@@ -12,8 +13,8 @@ export function useGeolocation(defaultPosition = null) {
       navigator.geolocation.getCurrentPosition(
          (pos) => {
             setPosition({
-               lat: pos.coords.latitude,
-               lng: pos.coords.longitude,
+               lat: pos.coords.latitude.toString(),
+               lng: pos.coords.longitude.toString(),
             });
             setIsLoading(false);
          },

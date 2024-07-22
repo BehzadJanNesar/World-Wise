@@ -1,18 +1,22 @@
+// Import statements
 import { useParams } from "react-router-dom";
 import styles from "./City.module.css";
 import { useCities } from "../../contexts/CitiesContext";
 import { useEffect } from "react";
 import Spinner from "../Spinner/Spinner";
 import ButtonBack from "../ButtonBack/ButtonBack";
+import type {City as CitiesPropsType} from "../../Types/Types";
 
-interface CityType {
-   cityName: string;
-   emoji: string;
-   date: string;
-   notes?: string;
+// Types and interfaces
+
+interface CurrentCityContext {
+   currentCity: CitiesPropsType | {};
+   getCity: (id: string) => void;
+   isLoading: boolean;
 }
 
-const formatDate = (date: string) => {
+// Utility function
+const formatDate = (date: string): string => {
    const parsedDate = new Date(date);
    if (isNaN(parsedDate.getTime())) {
       return "Invalid Date";
@@ -25,9 +29,10 @@ const formatDate = (date: string) => {
    }).format(parsedDate);
 };
 
+// Component
 function City() {
-   const { id } = useParams<{ id: string }>();
-   const { currentCity, getCity, loading } = useCities();
+   const { id } = useParams();
+   const { currentCity, getCity, isLoading }: CurrentCityContext = useCities();
 
    useEffect(() => {
       if (id) {
@@ -37,8 +42,8 @@ function City() {
 
    if (!currentCity) return <p>City not found</p>;
 
-   if (loading) return <Spinner />;
-   const { cityName, emoji, date, notes } = currentCity as CityType;
+   if (isLoading) return <Spinner />;
+   const { cityName, emoji, date, notes } = currentCity as CitiesPropsType;
 
    return (
       <div className={styles.city}>
