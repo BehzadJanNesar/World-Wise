@@ -1,3 +1,28 @@
 {
-  "cities": []
+  "cities": [
+    {
+      "id": "b9c8",
+      "cityName": "Pardis",
+      "country": "Iran (Islamic Republic of)",
+      "emoji": "🇮🇷",
+      "date": "2024-07-23",
+      "notes": "test",
+      "position": {
+        "lat": "35.727422855977416",
+        "lng": "51.81547164916993"
+      }
+    },
+    {
+      "id": "df6b",
+      "cityName": "Pardis",
+      "country": "Iran (Islamic Republic of)",
+      "emoji": "🇮🇷",
+      "date": "2024-07-23",
+      "notes": "test2\n",
+      "position": {
+        "lat": "35.732578839502125",
+        "lng": "51.76294326782227"
+      }
+    }
+  ]
 }

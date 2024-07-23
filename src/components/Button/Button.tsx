@@ -4,12 +4,12 @@ import styles from "./Button.module.css";
 interface ButtonProps {
    children: React.ReactNode;
    type: string;
-   onclick: MouseEventHandler<HTMLButtonElement>;
+   onClick: MouseEventHandler<HTMLButtonElement>;
 }
 
-function Button({ children, type, onclick }: ButtonProps) {
+function Button({ children, type, onClick }: ButtonProps) {
    return (
-      <button onClick={onclick} className={`${styles.btn} ${styles[type]}`}>
+      <button onClick={onClick} className={`${styles.btn} ${styles[type]}`}>
          {children}
       </button>
    );

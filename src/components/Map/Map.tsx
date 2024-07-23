@@ -27,7 +27,7 @@ function Map() {
    return (
       <div className={styles.mapContainer}>
          {!position && (
-            <Button type="position" onclick={GetPosition}>
+            <Button type="position" onClick={GetPosition}>
                {isLoading ? "is loading..." : "Get your current position"}
             </Button>
          )}

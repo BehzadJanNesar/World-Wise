@@ -6,7 +6,7 @@ function ButtonBack() {
    return (
       <Button
          type={"back"}
-         onclick={(e) => {
+         onClick={(e) => {
             e.preventDefault();
             navigate(-1);
          }}>

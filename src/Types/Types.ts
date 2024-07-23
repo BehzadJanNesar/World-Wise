@@ -31,7 +31,7 @@ export interface CitiesProviderProps {
 export interface State {
    cities: City[];
    isLoading: boolean;
-   currentCity: City | {};
+   currentCity: City;
    error: string | null;
 }
 

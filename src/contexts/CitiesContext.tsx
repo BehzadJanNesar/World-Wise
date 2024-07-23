@@ -5,7 +5,18 @@ import axios from "axios";
 const initialState: State = {
    cities: [],
    isLoading: false,
-   currentCity: {},
+   currentCity: {
+      id: "",
+      cityName: "",
+      country: "",
+      date: "",
+      emoji: "",
+      notes: "",
+      position: {
+         lat: "",
+         lng: "",
+      },
+   },
    error: "",
 };
 function reducer(state: State, action: Action): State {
@@ -19,13 +30,19 @@ function reducer(state: State, action: Action): State {
          return { ...state, isLoading: false, currentCity: action.payload };
       }
       case "city/created": {
-         return { ...state, isLoading: false, cities: [...state.cities, action.payload] };
+         return {
+            ...state,
+            isLoading: false,
+            cities: [...state.cities, action.payload],
+            currentCity: action.payload,
+         };
       }
       case "city/deleted": {
          return {
             ...state,
             isLoading: false,
             cities: state.cities.filter((city) => city.id !== action.payload),
+            currentCity: { ...state.currentCity },
          };
       }
       case "rejected": {
@@ -59,6 +76,8 @@ function CitiesProvider({ children }: CitiesProviderProps) {
    }, []);
 
    async function getCity(id: string) {
+      if (id === currentCity.id) return;
+
       dispatch({ type: "loading" });
       try {
          const res = await axios.get(`${BASE_URL}/cities/${id}`);
